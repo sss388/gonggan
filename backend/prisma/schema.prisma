@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id             String              @id @default(uuid())
+  name           String?             @unique
+  email          String              @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  status         String              @default("Y")
+  role           String              @default("user")
+  releaseAt      DateTime?
+  prToken        PasswordResetToken?
+  board          Board[]
+  shopping       Shopping[]
+  boughtItem     BoughtItem[]
+  favorite       Favorite[]
+  Cart           Cart?
+  delivery       Delivery[]
+  review         Review[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @db.VarChar(512)
+  expiresAt DateTime
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Shopping {
+  id          Int          @id @default(autoincrement())
+  title       String
+  content     String       @db.LongText
+  category    String
+  specialTime DateTime?
+  createdAt   DateTime     @default(now())
+  score       Int          @default(0)
+  discount    Int          @default(0)
+  userId      String?
+  status      String       @default("Y")
+  productId   Int          @unique
+  cartItemId  Int?
+  user        User?        @relation(fields: [userId], references: [id])
+  boutghtItem BoughtItem[]
+  favorite    Favorite[]
+  product     Product?     @relation(fields: [productId], references: [id])
+  review      Review[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  image       String?
+  createdAt   DateTime  @default(now())
+  price       Int
+  qty         Int
+  deliveryDay Int       @default(0)
+  name        String
+  Shopping    Shopping?
+  CartItem    CartItem?
+}
+
+model BoughtItem {
+  id             Int       @id @default(autoincrement())
+  price          Int
+  userId         String?
+  shoppingId     Int?
+  deliveryStatus String    @default("배송 준비중")
+  orderDate      DateTime  @default(now())
+  paymentDate    DateTime  @default(now())
+  paymentStatus  String    @default("결제 완료")
+  qty            Int
+  method         String    @default("카드")
+  address        String?
+  user           User?     @relation(fields: [userId], references: [id])
+  shopping       Shopping? @relation(fields: [shoppingId], references: [id])
+}
+
+model Favorite {
+  id         Int       @id @default(autoincrement())
+  userId     String?
+  shoppingId Int?
+  user       User?     @relation(fields: [userId], references: [id])
+  shopping   Shopping? @relation(fields: [shoppingId], references: [id])
+}
+
+model Cart {
+  id       Int        @id @default(autoincrement())
+  userId   String     @unique
+  cartItem CartItem[]
+  user     User?      @relation(fields: [userId], references: [id])
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  qty       Int      @default(1)
+  cartId    Int?
+  productId Int      @unique
+  product   Product? @relation(fields: [productId], references: [id])
+  cart      Cart?    @relation(fields: [cartId], references: [id])
+}
+
+model Board {
+  id        Int       @id @default(autoincrement())
+  kind      String?
+  content   String    @db.LongText
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  status    String    @default("Y")
+  userId    String?
+  title     String
+  user      User?     @relation(fields: [userId], references: [id])
+}
+
+model Delivery {
+  id        Int     @id @default(autoincrement())
+  name      String
+  recipient String
+  phone     String
+  address   String
+  request   String
+  userId    String?
+  status    String  @default("Y")
+  user      User?   @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  rating     Int       @default(0)
+  status     String    @default("Y")
+  content    String
+  userId     String?
+  shoppingId Int?
+  User       User?     @relation(fields: [userId], references: [id])
+  Shopping   Shopping? @relation(fields: [shoppingId], references: [id])
+}
