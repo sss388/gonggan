@@ -50,7 +50,7 @@ const boardList = reactive<Board[]>([]);
 watch(page, async (newPage) => {
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get('http://localhost:3001/user/boards?page='+newPage, {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boards?page=`+newPage, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     boardList.length = 0;
@@ -72,13 +72,13 @@ const formatDate = (dateString: Date) => {
 
 onMounted(async () => {
   const jwt = sessionStorage.getItem('jwt');
-  await axios.get('http://localhost:3001/user/boardCount', {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boardCount`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     pageLen.value = Math.ceil(res.data/10);
   });
 
-  await axios.get('http://localhost:3001/user/boards', {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boards`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     boardList.push(...res.data);

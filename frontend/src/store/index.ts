@@ -1,10 +1,10 @@
-import { createStore } from 'vuex';
-import {state} from "vue-tsc/out/shared";
+import {createStore} from 'vuex';
 import axios from "axios";
 import {Cloudinary} from "@cloudinary/url-gen";
 import {CloudinaryImage} from "@cloudinary/url-gen/assets/CloudinaryImage";
 import {fill} from "@cloudinary/url-gen/actions/resize";
-import router from "@/router";
+import * as process from "process";
+import {importPlugin} from "vite-plugin-vuetify/dist/importPlugin";
 
 export default createStore({
   state: {
@@ -68,9 +68,10 @@ export default createStore({
     setAvatar: (state, value) => {
       const cld = new Cloudinary({
         cloud: {
-          cloudName: 'dzad3jeuk',
+          cloudName: import.meta.env.VITE_CLOUDINARY_NAME,
         },
       });
+
       state.myAvatar = cld.image(value);
       state.myAvatar.resize(fill().width(100).height(100));
     },
@@ -79,7 +80,7 @@ export default createStore({
     fetchCurrentUser: async ({commit}) => {
       const jwt = sessionStorage.getItem('jwt');
 
-      await axios.get('http://localhost:3001/user/me', {
+      await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/me`, {
         headers: {Authorization: `Bearer ${jwt}`},
       }).then((res) => {
         commit('setCurrentUser', {
@@ -89,7 +90,8 @@ export default createStore({
           role: res.data.role
         });
 
-        commit('setAvatar', res.data.image);
+        if(res.data.image)
+          commit('setAvatar', res.data.image);
 
       }).catch((err) => {
         console.log(err);

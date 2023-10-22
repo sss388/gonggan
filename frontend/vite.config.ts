@@ -6,7 +6,6 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue({
@@ -36,6 +35,6 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 3000,
+    port: 3020,
   },
 })

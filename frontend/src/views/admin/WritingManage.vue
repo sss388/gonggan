@@ -98,7 +98,7 @@ const toggleStatus = async (item: Board) => {
   } else if (item.status === 'N') {
     item.status = 'Y';
   }
-  await axios.put('http://localhost:3001/admin/setBoardStatus', {
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/setBoardStatus`, {
     id: item.id,
     status: item.status,
   })
@@ -108,12 +108,12 @@ const searchBoard = async () => {
   search.keyword = inputSearch.keyword;
   search.category = inputSearch.category;
 
-  await axios.get(`http://localhost:3001/admin/boardCount?keyword=${search.keyword}&category=${search.category}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/boardCount?keyword=${search.keyword}&category=${search.category}`)
     .then((res) => {
       pageLen.value = Math.ceil(res.data/10);
     })
 
-  await axios.get(`http://localhost:3001/admin/board?keyword=${search.keyword}&category=${search.category}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/board?keyword=${search.keyword}&category=${search.category}`)
     .then((res) => {
       BoardList.length = 0;
       BoardList.push(...res.data);
@@ -122,7 +122,7 @@ const searchBoard = async () => {
 }
 
 watch(page, async(newPage) => {
-  await axios.get(`http://localhost:3001/admin/board?keyword=${search.keyword}&category=${search.category}&page=${newPage}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/board?keyword=${search.keyword}&category=${search.category}&page=${newPage}`)
     .then((res) => {
       BoardList.length = 0;
       BoardList.push(...res.data);
@@ -130,12 +130,12 @@ watch(page, async(newPage) => {
 })
 
 onMounted(async () => {
-  await axios.get('http://localhost:3001/admin/board')
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/board`)
     .then((res) => {
       BoardList.push(...res.data);
     })
 
-  await axios.get('http://localhost:3001/admin/boardCount')
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/boardCount`)
     .then((res) => {
       pageLen.value = Math.ceil(res.data/10);
     })

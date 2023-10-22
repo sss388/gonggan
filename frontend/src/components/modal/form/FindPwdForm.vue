@@ -48,7 +48,7 @@ const sendMail = async () => {
   loading.value = true;
 
   if (isValidEmail(email.value)) {
-    await axios.post("http://localhost:3001/auth/sendResetPwdMail",
+    await axios.post(`${process.env.VUE_APP_BACKEND_ADDRESS}/auth/sendResetPwdMail`,
       { email: email.value },
     ).then((res) => {
       console.log(res.data);
@@ -61,7 +61,7 @@ const sendMail = async () => {
       message: "This is a test message",
     };
 
-    emailjs.send(process.env.EMAIL_JS_SSS_SERVICE_ID, 'template_pxw6yus', templateParams, 'vtzT9TcXkuy5z0nbm')
+    emailjs.send(process.env.VUE_APP_EMAIL_JS_SSS_SERVICE_ID, 'template_pxw6yus', templateParams, 'vtzT9TcXkuy5z0nbm')
       .then(function(response) {
         console.log('SUCCESS!', response.status, response.text);
       }, function(error) {

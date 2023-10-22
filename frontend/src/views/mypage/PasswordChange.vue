@@ -65,7 +65,7 @@ const changePwd = async () => {
     && isValidNewPassword(pwdForm.newPwd)
     && isValidNewPassword2(pwdForm.newPwd2)
   ){
-    await axios.put('http://localhost:3001/auth/changePwd', {
+    await axios.put(`${import.meta.env.VITE_BACKEND_URL}/auth/changePwd`, {
       userId: store.getters.getCurrentUser.id,
       preventPwd: pwdForm.preventPwd,
       newPwd: pwdForm.newPwd

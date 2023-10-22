@@ -249,7 +249,7 @@ const login = async () => {
   if (isValidEmail(loginForm.email) === true &&
     loginForm.password.length >= 8) {
 
-    await axios.post("http://localhost:3001/auth/signin", {
+    await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/signin`, {
       email: loginForm.email,
       password: loginForm.password
     }).then((res) => {
@@ -274,7 +274,7 @@ const signUp = async () => {
     isValidNickname(signupForm.nickname) === true &&
     notChk.value === false
   ) {
-    await axios.post("http://localhost:3001/auth/signup", {
+    await axios.post( `${import.meta.env.VITE_BACKEND_URL}/auth/signup`, {
       name: signupForm.nickname,
       email: signupForm.email + "@" + signupForm.email2,
       password: signupForm.password

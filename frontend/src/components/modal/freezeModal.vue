@@ -19,7 +19,7 @@ const store = useStore();
 const days = ref(1);
 
 const freezeAccount = async () => {
-  await axios.put('http://localhost:3001/admin/freezeAccount', {
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/freezeAccount`, {
     userId: store.getters.getFreezeModalState.target,
     days: days.value,
   }).then((res) => {

@@ -82,6 +82,7 @@ model BoughtItem {
   qty            Int
   method         String    @default("카드")
   address        String?
+  deliveryDate   DateTime?
   user           User?     @relation(fields: [userId], references: [id])
   shopping       Shopping? @relation(fields: [shoppingId], references: [id])
 }

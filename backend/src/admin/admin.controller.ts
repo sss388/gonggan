@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Put, Query} from '@nestjs/common';
+import {Body, Controller, Get, Param, Put, Query} from '@nestjs/common';
 import {AdminService} from "./admin.service";
 
 @Controller('admin')
@@ -26,6 +26,7 @@ export class AdminController {
                    @Query('keyword') keyword: string,
                    @Query('category') category: string,
     ) {
+        console.log(page)
         return this.adminService.getAllShopping(
             page || 1, keyword || "", category || ""
         );

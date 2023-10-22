@@ -10,7 +10,7 @@
           <div>
             <div class="font-bold mb-1">주문일자</div>
             <input type="date" class="p-2 ring-1 ring-[#aaa] rounded-sm w-[150px] focus:ring-black focus:ring-2"
-                   style="outline: none;" v-model="startDate" :disabled="!endDate"
+                   style="outline: none;" v-model="startDate" :disabled="endDate"
                    :max="endDate ? endDate.getTime() : undefined"
             />
             ~
@@ -131,14 +131,17 @@ watch(page, async(newPage) => {
   const jwt = sessionStorage.getItem('jwt');
 
   if (!filter.method) {
-    await axios.get(`http://localhost:3001/user/boughtItemList?page=${newPage}`, {
+    await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemList?page=${newPage}`, {
       headers: {Authorization: `Bearer ${jwt}`},
     }).then((res) => {
       boughtList.length = 0;
       boughtList.push(...res.data);
     })
   } else {
-    await axios.get(`http://localhost:3001/user/boughtItemList?startdate=${filter.startDate}&enddate=${filter.endDate}&method=${filter.method}&page=${newPage}`, {
+    await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemList?
+      startdate=${filter.startDate}&
+      enddate=${filter.endDate}&
+      method=${filter.method}&page=${newPage}`, {
       headers: {Authorization: `Bearer ${jwt}`},
     }).then((res) => {
       boughtList.length = 0;
@@ -166,7 +169,7 @@ onMounted(async () => {
 
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get('http://localhost:3001/user/boughtItemCount', {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemCount`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     totalCount.value = res.data;
@@ -180,14 +183,14 @@ const handleFilter = async () => {
 
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get(`http://localhost:3001/user/boughtItemCount?startdate=${startDate.value}&enddate=${endDate.value}&method=${method.value}`, {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemCount?startdate=${startDate.value}&enddate=${endDate.value}&method=${method.value}`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     totalCount.value = res.data;
     pageLen.value = Math.ceil(res.data/10);
   })
 
-  await axios.get(`http://localhost:3001/user/boughtItemList?startdate=${startDate.value}&enddate=${endDate.value}&method=${method.value}`, {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemList?startdate=${startDate.value}&enddate=${endDate.value}&method=${method.value}`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     filter.method = method.value;

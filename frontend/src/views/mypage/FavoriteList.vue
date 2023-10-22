@@ -8,9 +8,8 @@
         <v-sheet min-height="500px">
           <div class="grid grid-cols-3">
             <div v-for="(item, idx) in favorite" :key="idx" class="relative">
-              <v-img v-if="item.shopping.product.image" :src="item.shopping.product.image"
-                     cover class="w-[200px] h-[200px] shadow-lg rounded-lg"
-              />
+              <AdvancedImage v-if="item.shopping.product.image" :cldImg="cldImg(item.shopping.product.image)"
+                             class="rounded-lg"/>
               <v-img v-else src="@/assets/ItemSample.png"
                      cover class="w-[200px] h-[200px] shadow-lg rounded-lg"
               />
@@ -30,6 +29,9 @@
 import {onMounted, reactive, ref} from "vue";
 import axios from "axios";
 import {useStore} from "vuex";
+import {AdvancedImage} from "@cloudinary/vue";
+import {Cloudinary} from "@cloudinary/url-gen";
+import {fill} from "@cloudinary/url-gen/actions/resize";
 
 interface Favorite {
   id: number;
@@ -45,11 +47,21 @@ const loading = ref(false);
 const store = useStore();
 const favorite = reactive<Favorite[]>([]);
 
+const cldImg = (image: string) => {
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: import.meta.env.VITE_CLOUDINARY_NAME,
+    },
+  });
+
+  return cld.image(image).resize(fill().width(200).height(200));
+}
+
 const delFavorite = async (id: number) => {
   loading.value = true;
 
   const jwt = sessionStorage.getItem('jwt');
-  await axios.delete('http://localhost:3001/user/deleteFavorite?id=' + id, {
+  await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/user/deleteFavorite?id=` + id, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     favorite.splice(
@@ -71,9 +83,10 @@ onMounted(async () => {
 
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get('http://localhost:3001/user/favoriteList',{
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/favoriteList`,{
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
+    console.log(res.data);
     favorite.push(...res.data);
   })
 

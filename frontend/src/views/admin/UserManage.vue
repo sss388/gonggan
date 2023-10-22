@@ -58,7 +58,7 @@ const page = ref(1);
 const store = useStore();
 
 watch(page, async(newPage) => {
-  await axios.get('http://localhost:3001/admin/users?page='+newPage)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/users?page=`+newPage)
     .then((res) => {
       users.length = 0;
       users.push(...res.data);
@@ -84,7 +84,7 @@ const handleFreezeBtn = (userId: string) => {
 }
 
 const releaseAccount = async (userId: string) => {
-  await axios.put('http://localhost:3001/admin/releaseAccount',
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/releaseAccount`,
     {userId}
   ).then((res) => {
     for (const item of users) {
@@ -103,7 +103,7 @@ const releaseChk = (_date: Date | string): boolean => {
 }
 
 onMounted(async () => {
-  await axios.get('http://localhost:3001/admin/users')
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/users`)
     .then((res) => {
       users.push(...res.data);
       pageLen.value = Math.ceil(users.length/10);

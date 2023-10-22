@@ -10,9 +10,9 @@
             <v-card-item>
               <div class="flex gap-3">
                 <div class="mb-1">
-                  <v-img v-if="item.shopping.product.image" :src="item.shopping.product.image"
-                         cover class="w-[150px] h-[150px] shadow-lg rounded-lg"/>
-                  <v-img src="@/assets/ItemSample.png" cover
+                  <AdvancedImage v-if="item.shopping.product.image" :cldImg="cldImg(item.shopping.product.image)"
+                                 class="rounded-lg"/>
+                  <v-img v-else src="@/assets/ItemSample.png" cover
                          class="w-[150px] h-[150px] shadow-lg rounded-lg"/>
                 </div>
                 <div class="font-normal text-xl w-full">
@@ -28,7 +28,7 @@
                     </tr>
                     <tr>
                       <td>배송 상태</td>
-                      <td>{{item.status}}</td>
+                      <td>{{item.deliveryStatus}}</td>
                     </tr>
                   </table>
                 </div>
@@ -55,13 +55,16 @@
 
 import {onMounted, reactive, ref, watch} from "vue";
 import axios from "axios";
+import {AdvancedImage} from "@cloudinary/vue";
+import {Cloudinary} from "@cloudinary/url-gen";
+import {fill} from "@cloudinary/url-gen/actions/resize";
 
 interface BoughtItem {
   price: number;
   amount: number;
   orderDate: Date;
   deliveryDate: Date;
-  status: string;
+  deliveryStatus: string;
   shopping: {
     id: number,
     title: string,
@@ -77,11 +80,21 @@ const page = ref(1);
 
 const boughtList = reactive<BoughtItem[]>([]);
 
+const cldImg = (image: string) => {
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: import.meta.env.VITE_CLOUDINARY_NAME,
+    },
+  });
+
+  return cld.image(image).resize(fill().width(150).height(150));
+}
+
 watch(page, async(newPage) => {
   loading.value = true;
 
   const jwt = sessionStorage.getItem('jwt');
-  await axios.get(`http://localhost:3001/user/boughtItemList?page=${newPage}`, {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemList?page=${newPage}`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     boughtList.length = 0;
@@ -108,7 +121,7 @@ onMounted(async () => {
 
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get('http://localhost:3001/user/boughtItemCount', {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/boughtItemCount`, {
     headers: {Authorization: `Bearer ${jwt}`},
   }).then((res) => {
     pageLen.value = Math.ceil(res.data/10);

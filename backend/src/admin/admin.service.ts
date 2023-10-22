@@ -42,6 +42,7 @@ export class AdminService {
     }
 
     async getAllShopping(page: number, keyword: string, category: string) {
+        console.log(page);
         if(category === '제목'){
             const list = await this.prisma.shopping.findMany({
                 take: 10,

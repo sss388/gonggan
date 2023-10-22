@@ -167,7 +167,11 @@ export class UserService {
                 userId,
             },
             include: {
-                shopping: true,
+                shopping: {
+                    include: {
+                        product: true
+                    }
+                },
             }
         })
 

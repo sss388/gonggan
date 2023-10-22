@@ -13,13 +13,13 @@
             </th>
             <td>
               <v-img src="@/assets/ProfileImg.jpg" width="100px" height="100px" cover
-                     class="rounded-lg" v-if="!userForm.image"
+                     class="rounded-lg" v-if="!store.getters.getMyAvatar"
               />
               <v-img :src="userForm.image" width="100px" height="100px" cover
                      class="rounded-lg" v-else-if="userForm.uploadImage !== null"
               />
               <AdvancedImage :cldImg="store.getters.getMyAvatar"
-                     class="rounded-lg" v-else/>
+                     class="rounded-lg"/>
 
               <v-btn class="w-[100px] p-3 text-md text-white rounded-lg items-center
                 flex mb-3" color="#27374D" type="button" @click="($refs.fileInput as HTMLInputElement).click()"
@@ -27,7 +27,6 @@
                 사진 변경
               </v-btn>
               <v-file-input
-                :rules="[avatarRule]"
                 accept="image/png, image/jpeg, image/bmp"
                 class="hidden" ref="fileInput" @change="previewImage"
                 v-model="userForm.uploadImage"
@@ -106,6 +105,8 @@ const userForm = reactive({
   image: "",
 });
 
+console.log(store.getters.getMyAvatar);
+
 const previewImage = () => {
   if(userForm.uploadImage !== null){
     const file = userForm.uploadImage[0];
@@ -127,7 +128,7 @@ const changeInfo = async () => {
 
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.put('http://localhost:3001/user/changeInfo', {
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/user/changeInfo`, {
     id: store.getters.getCurrentUser.id,
     name: userForm.name,
   },{
@@ -146,7 +147,7 @@ const changeInfo = async () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      await axios.put('http://localhost:3001/user/changeAvatar', formData, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/user/changeAvatar`, formData, {
         headers: {Authorization: `Bearer ${jwt}`},
       }).then((res) => {
         store.commit('setAvatar', res.data);
@@ -158,14 +159,10 @@ const changeInfo = async () => {
   loading.value = false;
 }
 
-const avatarRule = (value: Array<File>) => {
-  return value[0].size < 2000000 || false;
-}
-
 onMounted(async () => {
   const jwt = sessionStorage.getItem('jwt');
 
-  await axios.get('http://localhost:3001/user/me', {
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/me`, {
       headers: {Authorization: `Bearer ${jwt}`},
     }).then((res) => {
     userForm.name = res.data.name;

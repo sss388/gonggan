@@ -74,13 +74,8 @@
       </v-card-title>
       <v-card-item>
         <v-slider
-          v-model="discount.newDiscount"
-          thumb-color="blue"
-          track-color="blue"
-          thumb-label="always"
-          :step="1"
-          min="0"
-          max="100"
+          v-model="discount.newDiscount" thumb-color="blue" track-color="blue"
+          thumb-label="always" :step="1" min="0" max="100"
           class="py-10 px-4"
         />
       </v-card-item>
@@ -141,7 +136,7 @@ const handleDiscount = (id: number, currentDiscount: number) => {
 }
 
 const updateDiscount = async () => {
-  await axios.put('http://localhost:3001/admin/setDiscount', {
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/setDiscount`, {
     id: discount.targetId,
     discount: discount.newDiscount,
   }).then((res) => {
@@ -161,7 +156,7 @@ const toggleStatus = async (item: Shopping) => {
   } else if (item.status === 'N') {
     item.status = 'Y';
   }
-  await axios.put('http://localhost:3001/admin/setShoppingStatus', {
+  await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/setShoppingStatus`, {
     id: item.id,
     status: item.status,
   })
@@ -171,12 +166,13 @@ const searchShopping = async () => {
   search.keyword = inputSearch.keyword;
   search.category = inputSearch.category;
 
-  await axios.get(`http://localhost:3001/admin/shoppingCount?keyword=${search.keyword}&category=${search.category}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/shoppingCount?keyword=${search.keyword}&category=${search.category}`)
     .then((res) => {
       pageLen.value = Math.ceil(res.data/10);
     })
 
-  await axios.get(`http://localhost:3001/admin/shopping?keyword=${search.keyword}&category=${search.category}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/shopping?` +
+    `keyword=${search.keyword}&category=${search.category}`)
     .then((res) => {
       shoppingList.length = 0;
       shoppingList.push(...res.data);
@@ -185,7 +181,8 @@ const searchShopping = async () => {
 }
 
 watch(page, async(newPage) => {
-  await axios.get(`http://localhost:3001/admin/shopping?page=${newPage}&keyword=${search.keyword}&category=${search.category}`)
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/shopping?`
+  + `page=${newPage}&keyword=${search.keyword}&category=${search.category}`)
     .then((res) => {
       shoppingList.length = 0;
       shoppingList.push(...res.data);
@@ -193,14 +190,15 @@ watch(page, async(newPage) => {
 })
 
 onMounted(async () => {
-  await axios.get('http://localhost:3001/admin/shopping')
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/shoppingCount`)
+    .then((res) => {
+      pageLen.value = Math.ceil(res.data/10);
+    })
+
+  await axios.get(`${import.meta.env.VITE_BACKEND_URL}/admin/shopping`)
     .then((res) => {
       shoppingList.push(...res.data);
     })
 
-  await axios.get('http://localhost:3001/admin/shoppingCount')
-    .then((res) => {
-      pageLen.value = Math.ceil(res.data/10);
-    })
 })
 </script>
